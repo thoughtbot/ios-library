@@ -25,7 +25,7 @@ open class Push {
     
     fileprivate var keychain: Keychain {
         get {
-            return Keychain(appKey: client.appKey!)
+            return Keychain(appKey: client.appKey!, client: client)
         }
     }
     

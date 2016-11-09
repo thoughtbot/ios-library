@@ -44,6 +44,9 @@ open class User: NSObject, Credential, Mappable {
     /// `_kmd` property of the user.
     open fileprivate(set) var metadata: UserMetadata?
     
+    /// `_socialIdentity` property of the user.
+    open fileprivate(set) var socialIdentity: [AuthSource : [String : Any]]?
+    
     /// `username` property of the user.
     open var username: String?
     
@@ -372,6 +375,7 @@ open class User: NSObject, Credential, Mappable {
         metadata <- map[PersistableMetadataKey]
         username <- map["username"]
         email <- map["email"]
+        socialIdentity <- map["_socialIdentity"]
     }
     
     /// Sign out the current active user.
@@ -443,6 +447,15 @@ open class User: NSObject, Credential, Mappable {
         self.init(userId: kcsUser.userId, metadata: UserMetadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
         username = kcsUser.username
         email = kcsUser.email
+        if let kcsSocialIdentity = kcsUser.socialIdentity, !kcsSocialIdentity.isEmpty {
+            var socialIdentity = [AuthSource : [String : Any]]()
+            for (key, value) in kcsSocialIdentity {
+                if let key = key as? String, let authSource = AuthSource(rawValue: key), let value = value as? [String : Any] {
+                    socialIdentity[authSource] = value
+                }
+            }
+            self.socialIdentity = socialIdentity
+        }
     }
     
     fileprivate class func onMicLoginComplete(user kcsUser: KCSUser?, error: Swift.Error?, actionResult: KCSUserActionResult, client: Client, completionHandler: UserHandler? = nil) {
@@ -538,7 +551,7 @@ open class User: NSObject, Credential, Mappable {
                 micLoginVC.setValue(forceUIWebView, forKey: "forceUIWebView")
             }
             micLoginVC.client = client
-            micLoginVC.micApiVersion = client.micApiVersion
+            micLoginVC.micApiVersion = client.micApiVersion?.rawValue
             micVC = UINavigationController(rootViewController: micLoginVC)
         }
         var viewController = currentViewController
@@ -577,5 +590,19 @@ public enum MICUserInterface {
     
     /// Uses UIWebView
     case uiWebView
+    
+}
+
+/// Specifies which version of the MIC API will be used.
+public enum MICApiVersion: String {
+    
+    /// Version 1
+    case v1 = "v1"
+    
+    /// Version 2
+    case v2 = "v2"
+    
+    /// Version 3
+    case v3 = "v3"
     
 }

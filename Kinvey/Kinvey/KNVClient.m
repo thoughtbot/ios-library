@@ -46,6 +46,7 @@
 {
     __KNVClient* client = [[__KNVClient alloc] initWithAppKey:appKey
                                                     appSecret:appSecret
+                                                  accessGroup:nil
                                                   apiHostName:apiHostName
                                                  authHostName:authHostName];
     return [self initWithClient:client];
@@ -91,6 +92,7 @@
 {
     [self.client initializeWithAppKey:appKey
                             appSecret:appSecret
+                          accessGroup:nil
                           apiHostName:apiHostName
                          authHostName:authHostName
                         encryptionKey:nil

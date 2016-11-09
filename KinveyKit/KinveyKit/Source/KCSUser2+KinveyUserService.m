@@ -724,11 +724,15 @@ static NSString* micApiVersion = nil;
     if (!client) client = [KCSClient sharedClient].client;
     NSMutableString *url = [NSMutableString stringWithFormat:@"%@/auth", [self baseMicURLForClient:client]];
     if (isLoginPage) {
-        NSString* query = @{
+        NSMutableDictionary *queryDict = [NSMutableDictionary dictionaryWithDictionary: @{
             @"client_id" : client.appKey,
             kKCSMICRedirectURIKey : redirectURI,
             @"response_type" : @"code"
-        }.queryString;
+        }];
+        if ([[self micApiVersion] isEqualToString:@"v3"]) {
+            queryDict[@"scope"] = @"openid";
+        }
+        NSString* query = queryDict.queryString;
         [url appendFormat:@"?%@", query];
         return [NSURL URLWithString:url];
     }
