@@ -163,4 +163,40 @@ class QueryTest: XCTestCase {
         XCTAssertEqual(encodeQuery(Query { $0.predicate = NSPredicate(format: "lastName == %@", "Barros"); $0.sortDescriptors = [NSSortDescriptor(key: "age", ascending: false)]; $0.skip = 2; $0.limit = 5 }), "query=\(encodeURL(["lastName" : "Barros"]))&limit=5&skip=2&sort=\(encodeURL(["age" : -1]))")
     }
     
+    func testArrayContains() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames contains %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "SUBQUERY(authorNames, $item, $item.value == %@).@count > 0", "Victor"))
+    }
+    
+    func testArrayIndex() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[0] == %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[0].value == %@", "Victor"))
+    }
+    
+    func testArrayFirst() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[first] == %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[first].value == %@", "Victor"))
+    }
+    
+    func testArrayLast() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[last] == %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[last].value == %@", "Victor"))
+    }
+    
+    func testArraySize() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[size] == 2"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[size] == 2"))
+    }
+    
+    func testArraySubquery() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "subquery(authorNames, $authorNames, $authorNames like[c] %@).$count > 0", "Vic*"))
+        XCTAssertEqual(predicate, NSPredicate(format: "subquery(authorNames, $authorNames, $authorNames.value like[c] %@).$count > 0", "Vic*"))
+    }
+    
 }
