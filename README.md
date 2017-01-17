@@ -1,5 +1,7 @@
 # Kinvey iOS SDK
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5d0d62b22b0d447f823936b5f973d4f4)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=thoughtbot/kinvey-ios-library&utm_campaign=badger)
+
 ![badge-pod] ![badge-languages] ![badge-pms] ![badge-platforms] ![badge-status]
 
 The Kinvey iOS SDK is a package that can be used to develop iOS applications on the Kinvey platform.
